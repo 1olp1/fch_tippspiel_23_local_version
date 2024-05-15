@@ -1,0 +1,109 @@
+nav .navbar-brand
+{
+    font-size: xx-large;
+    margin-right: 30px;
+    margin-left: 20px;
+}
+
+nav .navbar-brand .blue
+{
+    color: #ffffff;
+}
+
+.navbar {
+    background-color: rgb(0, 59, 121);
+    border-bottom: 6px solid #e20613;
+  }
+
+h1, h2, h3, h4, h5, h6 {
+    color: #ffffff; /* Blue color */
+}
+
+p {
+    color: #ffffff; /* Gray color */
+}
+
+.navbar-nav .nav-link {
+    font-size: 18px;
+    margin-right: 20px;
+    color:#ffffff;
+}
+
+.team-logo {
+    max-width: 35px; /* Adjust the width as needed */
+    max-height: 35px; /* Adjust the height as needed */
+}
+
+.team-logo-small {
+    max-width: 25px; /* Adjust the width as needed */
+    max-height: 25px; /* Adjust the height as needed */
+}
+
+.center-aligned {
+    text-align: center;
+}
+
+.left-aligned {
+    text-align: left;
+}
+.right-aligned {
+    text-align: right;
+}
+
+body{
+    background-color: rgb(17, 39, 63);
+    font-family: 'Fira Sans', sans-serif;
+}
+
+
+/* Optionally, set background color for table cells */
+td {
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.prediction-column {
+    width: 150
+}
+
+.table-wrapper {
+    max-height: 700px;
+    overflow: auto;
+    display:inline-block;
+  }
+
+.sticky-header {
+    position: sticky;
+    top: 0;
+
+    border-bottom: 2px solid #000000;  /* Add a 1px solid border at the bottom */
+}
+
+.custom-column-1 {
+    width: 2%; /* Set the width of column 1 to 20% */
+}
+
+
+.score-input {
+  width: 43px; /* Adjust width as needed */
+  text-align: center; /* Center text within input */
+}
+
+.btn-container {
+    text-align: right;
+    margin-top: 10px; /* Adjust as needed */
+}
+
+.last-update {
+    font-size: 14px;
+    text-align: left;
+    margin-top: 10px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+

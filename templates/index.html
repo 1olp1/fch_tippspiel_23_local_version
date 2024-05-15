@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Home
+{% endblock %}
+
+{% block main %}
+
+<div class="mb-3">
+    <h3>Tippübersicht für {{ insights.username }}</h3>
+    <p> Deine Platzierung: {{ insights.rank }}. von {{ insights.no_users }}<br>
+        Gesamtpunkte: {{ insights.total_points }}<br>
+    </p>
+
+    <p>
+        Getippte Spiele: {{ insights.total_games_predicted }} <br>
+        Ausgewertete Tipps: {{ insights.predictions_rated }} <br>
+        Verpasste Spiele: {{ insights.missed_games }} <br>
+        Punkte pro Tipp: {{ insights.points_per_tip }}<br>
+    </p>
+    <p>
+        Richtiges Ergebnis: {{ insights.corr_result }}x ({{ insights.corr_result_p }}%)<br>
+        Richtiges Torverhältnis: {{ insights.corr_goal_diff }}x ({{ insights.corr_goal_diff_p }}%)<br>
+        Richtige Tendenz: {{ insights.corr_tendency }}x ({{ insights.corr_tendency_p }}%)<br>
+        Falscher Tipp: {{ insights.wrong_predictions }}x ({{ insights.wrong_predictions_p }}%)<br>
+    </p>
+
+
+</div>
+
+{% endblock %}

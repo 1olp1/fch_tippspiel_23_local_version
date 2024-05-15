@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Tippen
+{% endblock %}
+
+{% block main %}
+<form action="/tippen" method="post">
+    <div class="table-wrapper text-center">
+        <table class="table">
+        <thead class="sticky-header">
+            <tr>
+                <th colspan="2">Datum</th>
+                <th colspan="5">Begegnung</th>
+                <th colspan="3">Tipp</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for match in matches %}
+                <tr>
+                    <td>{{  match.matchday  }}.</td>
+                    <td>{{  match.matchDateTime  }}</td>
+                    <td class="right-aligned" >{{  match.team1_name  }}</td>
+                    <td><img src="{{  match.team1IconPath  }}" alt="{{  match.team1_name }}-logo" class="team-logo"></td>
+                    <td>{% if match.matchIsFinished == 1 %}
+                            {{ match.team1_score }}&nbsp;:&nbsp;{{ match.team2_score }}
+                        {% else %}
+                            - : -
+                        {% endif %}</td>
+                    <td><img src="{{  match.team2IconPath  }}" alt="{{  match.team2_name  }}-logo" class="team-logo"></td>
+                    <td class="left-aligned">{{  match.team2_name  }}</td>
+                    <td>
+                        <input type="text" autocomplete="off" class="form-control score-input" placeholder="-"  id="team1Score_{{ match.id }}" name="team1Score_{{ match.id }}" min="0" max="99" maxlength="2" value="{% for prediction in predictions %}{% if prediction.match_id == match.id %}{{ prediction.team1_score }}{% endif %}{% endfor %}" {% if match not in valid_matches %} disabled{% endif %}>
+                    </td>
+                    <td style="width: 1%">:</td>
+                    <td>
+                        <input type="text" autocomplete="off" class="form-control score-input" placeholder="-"  id="team2Score_{{ match.id }}" name="team2Score_{{ match.id }}" min="0" max="99" maxlength="2" value="{% for prediction in predictions %}{% if prediction.match_id == match.id %}{{ prediction.team2_score }}{% endif %}{% endfor %}" {% if match not in valid_matches %} disabled{% endif %}>
+                    </td>                         
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    <div style="display: flex; justify-content: space-between;">
+        <p class="last-update">Stand: {{ last_update }}</p>
+        <button type="submit" class="btn btn-primary btn-container">Speichern</button>
+    </div>
+</form>
+
+
+
+
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Rangliste
+{% endblock %}
+
+{% block main %}
+<div>
+    <div class="table-responsive" style="max-width: 1000px;">
+        <table class="table table_bordered">
+            <thead class="sticky-header">
+                <tr>
+                    <td colspan="2"></td>
+                    {% for match in matchdata %}
+                            <td> {{ match.matchday  }}</td>
+                    {% endfor %}
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td colspan="2"></td>
+                    {% for match in matchdata %}
+                            {% if match.team1_id == '199' %}
+                                <td><span>H </span><img src="{{  match.team2IconPath  }}" alt="{{  match.team2_shortName  }}-logo" class="team-logo-small"></td>
+                            {% else %}
+                                <td><span>A </span><img src="{{  match.team1IconPath  }}" alt="{{  match.team1_shortName  }}-logo" class="team-logo-small"></td>
+                            {% endif %}
+                    {% endfor %}
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td colspan="2">Tipper</td>
+                    {% for match in matchdata %}
+                        {% if match.team1_score != None %}
+                            <td>{{ match.team1_score }}:{{ match.team2_score}}</td>
+                        {% else %}
+                            <td>-:-</td>
+                        {% endif %}
+                    {% endfor %}
+                    <td>4 P.</td>
+                    <td>3 P.</td>
+                    <td>2 P.</td>
+                    <td>Ges.</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                {% if user.id == user_id %}
+                    <tr class="table-primary">
+                {% else %}
+                <tr>
+                {% endif %}
+                    <td>{{ loop.index }}</td>
+                    <td>{{ user.username }}</td>
+                    {% for match in matchdata %}
+                        {% set prediction = user.predictions|selectattr("matchday", "equalto", match.matchday)|list|first %}
+                        <td>
+                            {% if prediction %}
+                                {% if match.matchIsFinished == 1 or (next_match.is_live and next_match.id == match.id) or user.id == user_id%}
+                                    {{ prediction.team1_score }}:{{ prediction.team2_score }}
+                                        {% if match.predictions_evaluated == 1 %}
+                                            <sub>{{ prediction.points }}</sub>
+                                        {% else %}
+                                            <sub>?</sub>
+                                        {% endif %}
+                                {% else %}
+                                    -:-
+                                {% endif %}
+                            {% else %}
+                                -:-
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                    <td>{{ user.correct_result }}</td>
+                    <td>{{ user.correct_goal_diff }}</td>
+                    <td>{{ user.correct_tendency }}</td>
+                    <td>{{ user.total_points }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="last-update" style="display: flex; justify-content: space-between;">
+        <p>Stand: {{ last_update }}</p>
+        <p>H = HEIM &nbsp&nbsp  A = Auswärts</p>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Tabelle
+{% endblock %}
+
+{% block main %}
+<div class="text-center">
+    <table class="table" style="max-width: 600px;">
+        <thead class="sticky-header">
+            <tr>
+                <th scope="col" class="col-md-1">Pl.</th>
+                <th scope="col" class="text-end col-md-1"></th>
+                <th scope="col" class="text-start col-md-4">Team</th>
+                <th scope="col" class="col-md-1">Spiele</th>
+                <th scope="col" class="col-md-1">S</th>
+                <th scope="col" class="col-md-1">U</th>
+                <th scope="col" class="col-md-1">N</th>
+                <th scope="col" class="col-md-1">Tore</th>
+                <th scope="col" class="col-md-1">Diff.</th>
+                <th scope="col" class="col-md-1">Punkte</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for team in table_data %}
+                <tr>
+                    <td>{{  loop.index  }}</td>
+                    <td><img src="{{  team.teamIconPath  }}" alt="{{  team.shortName  }}-logo" class="team-logo"></td>
+                    <td class="text-start" >{{  team.teamName  }}</td>
+                    <td>{{  team.matches  }}</td>
+                    <td>{{  team.won  }}</td>
+                    <td>{{  team.draw  }}</td>
+                    <td>{{  team.lost  }}</td>
+                    <td>{{  team.goals  }}:{{  team.opponentGoals  }}</td>
+                    <td>{{  team.goalDiff  }}</td>
+                    <td>{{  team.points  }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="last-update">
+        <p>Stand: {{ table_data[0].lastUpdateTime }}</p>
+    </div>
+</div>
+{% endblock %}
