@@ -55,7 +55,7 @@
                         {% set prediction = user.predictions|selectattr("matchday", "equalto", match.matchday)|list|first %}
                         <td>
                             {% if prediction %}
-                                {% if match.matchIsFinished == 1 or (next_match.is_live and next_match.id == match.id) or user.id == user_id%}
+                                {% if match.matchIsFinished == 1 or (next_match and next_match.is_live and next_match.id == match.id) or user.id == user_id%}
                                     {{ prediction.team1_score }}:{{ prediction.team2_score }}
                                         {% if match.predictions_evaluated == 1 %}
                                             <sub>{{ prediction.points }}</sub>

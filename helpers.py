@@ -477,7 +477,7 @@ def get_insights():
 
 def is_update_needed_league_table():
     # Get current matchday by online query (returns the upcoming matchday after the middle of the week)
-    current_matchday = get_current_matchday_id_openliga()
+    current_matchday = get_current_matchday_openliga()
 
     # Get current matchday of the local database
     current_match_db = db.execute("""
@@ -514,51 +514,47 @@ def is_update_needed_league_table():
 
 
 def is_update_needed_FCH_matches():
-    # Get next match object through the api
-    next_match_API = get_next_match_for_team_API()
-
-    # Get upcoming matchday from the api
-    next_matchday_API = next_match_API["group"]["groupOrderID"]
-
-    # If table is empty, fill table
+    # If table is empty, fill fch_matches table
     empty_check_db  = db.execute("SELECT * FROM FCH_matches")
 
     if not empty_check_db:
         insert_matches_to_db() 
 
-    # Get upcoming matchday of local database
-    next_matchday_db = db.execute("""
-                                     SELECT matchday FROM FCH_matches
-                                     WHERE matchIsFinished = 0
-                                     ORDER BY matchday ASC
-                                     LIMIT 1;
-                                     """)
-    
-    if not next_matchday_db:
-        # If there is no 'next' matchday, current matchday has to be 34
-        next_matchday_db = [34]
+    # Get current matchday from API (gets the closest in time matchday)
+    current_matchday_API = get_current_matchday_openliga()
 
-    print("Next matchday local: ", next_matchday_db[0]["matchday"])
+    # Get current match from db based on which match is closest in time
+    current_datetime = get_current_datetime()
+    current_matchday_db = db.execute("""
+                                     SELECT
+                                        matchday, id
+                                     FROM 
+                                        FCH_matches
+                                     ORDER BY
+                                        ABS(strftime('%s', matchDateTime) - strftime('%s', ?))
+                                     """, current_datetime)[0]  # query with chatgpt help
+
+    print("Current matchday local: ", current_matchday_db["matchday"])
+    print("Current matchday API: ", current_matchday_API)
 
     ### Compare matchdays and if they're the same check for update times
 
     # If the current local matchday is smaller than the current online matchday, update is needed
-    if next_matchday_db[0]["matchday"] < next_matchday_API:
+    if current_matchday_db["matchday"] < current_matchday_API:
         return True
     
     # If the next matchdays are the same, check for last update times for these matches
-    elif next_matchday_API == next_matchday_db[0]["matchday"]:
-        # Get last update time of the online matchdata
-        lastUpdateTime_openliga = next_match_API["lastUpdateDateTime"]
-
-        print("last update time openliga", lastUpdateTime_openliga)
+    elif current_matchday_db["matchday"] == current_matchday_API:
+        # Get last online update for the match
+        current_match_matchdata = get_matchdata_openliga(current_matchday_db["id"])
+        lastUpdateTime_openliga = current_match_matchdata["lastUpdateDateTime"]
 
         # Get last update time of the locally saved db
         lastUpdateTime_db = db.execute("""
                                         SELECT lastUpdateDateTime FROM FCH_matches
-                                        WHERE matchday = ?
+                                        WHERE id = ?
                                         """,
-                                        next_matchday_API)
+                                        current_matchday_db["id"])
         
         # If a last update time exists for the next match
         if lastUpdateTime_db[0]["lastUpdateDateTime"] and lastUpdateTime_openliga:
@@ -578,18 +574,9 @@ def is_update_needed_FCH_matches():
         else:
             # When there are no comparable update times, update anyway to be on the safe side
             return True
-
-
-def get_next_match_for_team_API():
-    url = f"https://api.openligadb.de/getnextmatchbyleagueteam/{league_id}/{team_id}"
-
-    nextmatch = get_openliga_json(url)
-
-    if nextmatch != None:
-        return nextmatch
-
+        
     else:
-        print("Error beim Laden von nextmatch")
+        False
 
 
 def get_matchdata_openliga(id):
@@ -623,7 +610,7 @@ def get_last_online_change(matchday_id):
 
     return online_change
 
-def get_current_matchday_id_openliga():
+def get_current_matchday_openliga():
     # Openliga DB API
     url = f"https://api.openligadb.de/getcurrentgroup/{league}"
 

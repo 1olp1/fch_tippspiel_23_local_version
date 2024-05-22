@@ -2,6 +2,7 @@ from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import login_required, get_matches_FCH, get_league_table, get_current_datetime, update_FCH_matches_db, update_league_table, is_update_needed_FCH_matches, is_update_needed_league_table, update_user_scores, convert_to_6_decimals, convert_iso_datetime_to_human_readable, get_insights, get_rangliste_data
+from datetime import timedelta
 from cs50 import SQL
 
 # Configure application
@@ -48,14 +49,29 @@ def rangliste():
                               WHERE matchIsFinished = 0
                               ORDER BY matchDateTime ASC
                               LIMIT 1
-                              """)[0]
+                              """)
     
-    # Introduce is live key to be able to display the predictions of users while the match is live
-    next_match["is_live"] = False
-    if get_current_datetime() > next_match["matchDateTime"]:
-        next_match["is_live"] = True
+    if next_match:
+        next_match = dict(next_match) # Convert Row object to dict
+        next_match["is_live"] = False
 
-    return render_template("rangliste.html", matchdata=get_matches_FCH(), users=get_rangliste_data(), user_id=session["user_id"], next_match=next_match, last_update=last_update)
+        current_datetime = get_current_datetime()
+        match_start_time = next_match["matchDateTime"]
+        match_duration = timedelta(minutes=90+15+10)  # Assuming each match lasts 90 minutes
+        match_end_time = match_start_time + match_duration
+
+        if match_start_time <= current_datetime <= match_end_time:
+            next_match["is_live"] = True
+
+    else:
+        next_match = None
+
+    return render_template("rangliste.html",
+                           matchdata=get_matches_FCH(),
+                           users=get_rangliste_data(),
+                           user_id=session["user_id"],
+                           next_match=next_match,
+                           last_update=last_update)
 
 
 @app.route("/tippen", methods=["GET", "POST"])
